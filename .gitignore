@@ -1,2 +1,30 @@
+# dependências
 node_modules/
 .cache/
+.vite/
+dist/
+build/
+
+# arquivos locais e temporários
+*.log
+*.env
+.env.*
+.DS_Store
+Thumbs.db
+
+# configs do sistema
+.vscode/
+.idea/
+*.swp
+
+# relatórios e stats
+coverage/
+*.lcov
+
+# artefatos de deploy
+.vercel/
+*.tgz
+
+# dados locais
+*.csv
+!public/dados_v4.csv
