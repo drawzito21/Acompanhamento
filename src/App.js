@@ -93,33 +93,51 @@ function App() {
     return Array.from(anos).sort().reverse();
   }, [data]);
 
-  const uniqueMeses = useMemo(() => {
-    const mesesSet = new Set();
-    data.forEach((item) => item.MesValor && mesesSet.add(item.MesValor));
-    const mesesArray = Array.from(mesesSet);
-    return ordemMeses.filter((mes) => mesesArray.includes(mes));
-  }, [data]);
+const normalizar = (texto) =>
+  texto?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-  const displayData = useMemo(() => {
-    return data.filter((d) => {
-      const matchName = selectedName ? d.Nome === selectedName : true;
-      const matchSetor = selectedSetor ? d.Setor === selectedSetor : true;
-      const matchAno = selectedAno ? d.Ano === selectedAno : true;
-      const matchMes = selectedMes ? d.MesValor === selectedMes : true;
-      return matchName && matchSetor && matchAno && matchMes;
-}).sort((a, b) => {
+const uniqueMeses = useMemo(() => {
+  const mesesSet = new Set();
+  data.forEach((item) => {
+    if (item.MesValor) mesesSet.add(normalizar(item.MesValor));
+  });
+  const mesesArray = Array.from(mesesSet);
+  return ordemMeses.filter((mes) => mesesArray.includes(normalizar(mes)));
+}, [data]);
+
+const displayData = useMemo(() => {
+  const dadosFiltrados = data.filter((d) => {
+    const matchName = selectedName
+      ? normalizar(d.Nome) === normalizar(selectedName)
+      : true;
+
+    const matchSetor = selectedSetor
+      ? normalizar(d.Setor) === normalizar(selectedSetor)
+      : true;
+
+    const matchAno = selectedAno
+      ? d.Ano?.toString().trim() === selectedAno
+      : true;
+
+    const matchMes = selectedMes
+      ? normalizar(d.MesValor) === normalizar(selectedMes)
+      : true;
+
+    return matchName && matchSetor && matchAno && matchMes;
+  });
+
   const meses = {
     janeiro: 0, fevereiro: 1, março: 2, abril: 3, maio: 4, junho: 5,
     julho: 6, agosto: 7, setembro: 8, outubro: 9, novembro: 10, dezembro: 11
   };
 
-  const dataA = new Date(a.Ano, meses[a.MesValor] || 0);
-  const dataB = new Date(b.Ano, meses[b.MesValor] || 0);
-
-  return dataA - dataB; // ou dataB - dataA pra inverter
-});
-  }, [selectedName, selectedSetor, selectedAno, selectedMes, data]);
-
+  return dadosFiltrados.sort((a, b) => {
+    const dataA = new Date(a.Ano, meses[normalizar(a.MesValor)] || 0);
+    const dataB = new Date(b.Ano, meses[normalizar(b.MesValor)] || 0);
+    return dataA - dataB;
+  });
+}, [selectedName, selectedSetor, selectedAno, selectedMes, data]);
+ 
   const timelineData = useMemo(() => {
     if (!selectedName) return [];
     return data.filter(
