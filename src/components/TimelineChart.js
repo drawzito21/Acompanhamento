@@ -7,6 +7,7 @@ import {
   PointElement,
   LineElement,
   BarElement,
+  BarController,
   Tooltip,
   Legend
 } from "chart.js";
@@ -17,9 +18,11 @@ ChartJS.register(
   PointElement,
   LineElement,
   BarElement,
+  BarController,
   Tooltip,
   Legend
 );
+
 
 function TimelineChart({ data, theme }) {
   const ordemMeses = [
